@@ -1,10 +1,11 @@
 import socket
 import jwt               
+from sshCommand import enterCommand
 
 # creating socket
 s = socket.socket()          
 
-host = "localhost"
+host = "192.168.43.157"
 port = 12345
 key = "secret"                
 
@@ -16,8 +17,10 @@ try:
     encoded = jwt.encode({"username": username, "password": password}, key, algorithm="HS256")
     print(encoded)
     s.send(encoded.encode('utf-8'))
-
     # close connection
-    s.close() 
+    s.close()
+
+    enterCommand()
+
 except socket.error as msg:
     print("[Server is not available.] Message:", msg)
