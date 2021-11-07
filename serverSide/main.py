@@ -1,34 +1,56 @@
 import socket
 import jwt
 
-host = "127.0.0.1"
-port = 12345
-key = "secret"
+testUsername = "ertu"
+testPassword = "130245"
 
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((host, port))
-    print("Socket creation successfull")
+def receiveCommands(s: socket,k)-> str:
+    c = s.accept()[0]
+    command = c.recv(1024)
+    decodedCommand = jwt.decode(command,k,algorithms="HS256")
+    plainCommand = decodedCommand.get('command')
+    print(plainCommand)
+    c.close()
+    return plainCommand
 
-    s.listen(5)
-    print("Socket listening")
+def main():
+    host = "192.168.43.157"
+    port = 12345
+    key = "secret"
 
-except socket.error as msg:
-    print("Hata :",msg)
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((host, port))
+        print("Socket creation successfull")
 
-while True:
+        s.listen(5)
+        print("Socket listening")
+
+    except socket.error as msg:
+        print("Hata :",msg)
+
     c, addr = s.accept()
     print("Coming connection: ", addr)
 
-    message = c.recv(1024)
-    print(message)
-    decoded = jwt.decode(message, key, algorithms="HS256")
+    credentials = c.recv(1024)
+    print(credentials)
+    decoded = jwt.decode(credentials, key, algorithms="HS256")
     username = decoded.get('username')
     password = decoded.get('password')
     print(decoded)
-    print(username + password)
+    print(username + " " + password)
+
+    if username == testUsername and password == testPassword:
+        receiveCommands(s,key)
+
+    else:
+        errMsg = c.send("Wrong credentials.")
+        c.close()
 
     c.close()
 
 
-    print("selmaK")
+
+main()
+
+    

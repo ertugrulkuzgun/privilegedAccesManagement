@@ -13,7 +13,8 @@ def enterCommand():
 
         while True:
             command = input("ssh: ")
-            encodedCommand = jwt.encode({"command": command},key,algorithm= "HS256")
+            processID = 2
+            encodedCommand = jwt.encode({"command": command,},key,algorithm= "HS256")
             print("Command encoded succesfully")
             s.send(encodedCommand.encode('utf-8'))
 
